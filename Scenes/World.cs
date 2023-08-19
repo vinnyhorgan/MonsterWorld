@@ -17,7 +17,6 @@ namespace MonsterWorld.Scenes
         private Rectangle _grass = new(16 * 6, 16, 16, 16);
         private List<Monster> _monsters = new();
         private Camera2D _camera;
-        private float _timer;
 
         public override void Load()
         {
@@ -61,7 +60,7 @@ namespace MonsterWorld.Scenes
 
                     Logger.Info($"Trying {x}, {y}");
 
-                    if (_world[x, y] == 1)
+                    if (_world[y, x] == 1)
                     {
                         monster.Position = new Vector2(x * 16, y * 16);
                         break;
@@ -84,20 +83,13 @@ namespace MonsterWorld.Scenes
 
         public override void Update(float dt)
         {
-            _timer += dt;
+            _player.Update(dt, _world);
 
-            if (_timer > 0.1)
+            _camera.target = _player.Position;
+
+            foreach (var monster in _monsters)
             {
-                _player.Update(dt, _world);
-
-                _camera.target = _player.Position;
-
-                foreach (var monster in _monsters)
-                {
-                    monster.Update(dt, _world, _pathFinder, _player);
-                }
-
-                _timer = 0;
+                monster.Update(dt, _world, _pathFinder, _player);
             }
         }
 

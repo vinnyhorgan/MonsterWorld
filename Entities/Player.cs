@@ -19,30 +19,42 @@ namespace MonsterWorld.Entities
         {
             if (Raylib.IsKeyDown(KeyboardKey.KEY_W))
             {
-                if (world[TileY() - 1, TileX()] == 1)
+                if (TileY() - 1 >= 0)
                 {
-                    Position.Y -= 16;
+                    if (world[TileY() - 1, TileX()] == 1)
+                    {
+                        Position.Y -= 16;
+                    }
                 }
             }
             else if (Raylib.IsKeyDown(KeyboardKey.KEY_S))
             {
-                if (world[TileY() + 1, TileX()] == 1)
+                if (TileY() + 1 < world.GetLength(0))
                 {
-                    Position.Y += 16;
+                    if (world[TileY() + 1, TileX()] == 1)
+                    {
+                        Position.Y += 16;
+                    }
                 }
             }
             else if (Raylib.IsKeyDown(KeyboardKey.KEY_A))
             {
-                if (world[TileY(), TileX() - 1] == 1)
+                if (TileX() - 1 >= 0)
                 {
-                    Position.X -= 16;
+                    if (world[TileY(), TileX() - 1] == 1)
+                    {
+                        Position.X -= 16;
+                    }
                 }
             }
             else if (Raylib.IsKeyDown(KeyboardKey.KEY_D))
             {
-                if (world[TileY(), TileX() + 1] == 1)
+                if (TileX() + 1 < world.GetLength(1))
                 {
-                    Position.X += 16;
+                    if (world[TileY(), TileX() + 1] == 1)
+                    {
+                        Position.X += 16;
+                    }
                 }
             }
         }
