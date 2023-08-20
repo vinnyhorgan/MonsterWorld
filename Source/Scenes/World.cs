@@ -70,6 +70,8 @@ namespace MonsterWorld.Scenes
             _player.Draw();
 
             Raylib.EndMode2D();
+
+            Raylib.DrawText("WASD to move", 10, 10, 10, Color.WHITE);
         }
     }
 }

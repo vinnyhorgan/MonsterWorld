@@ -6,7 +6,8 @@ namespace MonsterWorld.Entities
     enum MonsterState
     {
         Idle,
-        Thirsty
+        Thirsty,
+        Hungry
     }
 
     class Monster
@@ -17,11 +18,13 @@ namespace MonsterWorld.Entities
         private MonsterState _state = MonsterState.Idle;
         private int _range;
         private float _thirst = 0.0f;
+        private float _hunger = 0.0f;
         private float _timer = 0.0f;
         private int _direction = 0;
         private int _counter = 0;
         private int _moveCounter = Raylib.GetRandomValue(3, 8);
         private int _thirstResistance = Raylib.GetRandomValue(10, 40);
+        private int _hungerResistance = Raylib.GetRandomValue(10, 40);
         private float _speed = Raylib.GetRandomValue(20, 300) / 100.0f;
 
         public Position Position = new(0, 0);
@@ -55,6 +58,10 @@ namespace MonsterWorld.Entities
             {
                 Thirsty(map);
             }
+            else if (_state == MonsterState.Hungry)
+            {
+                Hungry(map);
+            }
         }
 
         public void Draw(Map map)
@@ -68,6 +75,10 @@ namespace MonsterWorld.Entities
             else if (_state == MonsterState.Thirsty)
             {
                 tint = Color.BLUE;
+            }
+            else if (_state == MonsterState.Hungry)
+            {
+                tint = Color.ORANGE;
             }
 
             Raylib.DrawTextureRec(_texture, _frame, PixelPosition, tint);
@@ -148,10 +159,16 @@ namespace MonsterWorld.Entities
         private void Idle(Map map)
         {
             _thirst += Raylib.GetFrameTime();
+            _hunger += Raylib.GetFrameTime();
 
             if (_thirst > _thirstResistance)
             {
                 _state = MonsterState.Thirsty;
+            }
+
+            if (_hunger > _hungerResistance)
+            {
+                _state = MonsterState.Hungry;
             }
 
             if (_timer > _speed)
@@ -200,6 +217,49 @@ namespace MonsterWorld.Entities
                 {
                     _state = MonsterState.Idle;
                     _thirst = 0.0f;
+                    _path = new Position[0];
+                }
+            }
+        }
+
+        private void Hungry(Map map)
+        {
+            if (_timer > _speed * 0.5f)
+            {
+                _timer = 0.0f;
+
+                if (_path.Length == 0)
+                {
+                    var foodPos = map.GetPositionOfTileInRange(Position.X, Position.Y, _range, TileType.Bush);
+
+                    if (foodPos.X == -1 && foodPos.Y == -1)
+                    {
+                        Move(map);
+                    }
+                    else
+                    {
+                        _path = map.FindPath(Position.X, Position.Y, foodPos.X, foodPos.Y);
+                    }
+                }
+
+                if (_path.Length > 0)
+                {
+                    Position = _path[0];
+
+                    var newPath = new Position[_path.Length - 1];
+
+                    for (int i = 0; i < newPath.Length; i++)
+                    {
+                        newPath[i] = _path[i + 1];
+                    }
+
+                    _path = newPath;
+                }
+
+                if (map.GetTile(Position.X, Position.Y).Type == TileType.Bush)
+                {
+                    _state = MonsterState.Idle;
+                    _hunger = 0.0f;
                     _path = new Position[0];
                 }
             }

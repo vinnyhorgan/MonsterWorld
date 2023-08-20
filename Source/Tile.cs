@@ -45,7 +45,7 @@ namespace MonsterWorld
                     Frame = new Rectangle(0, 0, 16, 16);
                     break;
                 case TileType.Bush:
-                    IsWalkable = false;
+                    IsWalkable = true;
                     Texture = AssetManager.Instance.GetTexture("tiles.png");
                     Frame = new Rectangle(16 * 2, 16 * 3, 16, 16);
                     break;
