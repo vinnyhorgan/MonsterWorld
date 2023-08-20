@@ -15,46 +15,50 @@ namespace MonsterWorld.Entities
             _texture = AssetManager.Instance.GetTexture("characters.png");
         }
 
-        public void Update(float dt, short[,] world)
+        public int TileX
+        {
+            get
+            {
+                return (int)Position.X / 16;
+            }
+        }
+
+        public int TileY
+        {
+            get
+            {
+                return (int)Position.Y / 16;
+            }
+        }
+
+        public void Update(float dt, Map map)
         {
             if (Raylib.IsKeyDown(KeyboardKey.KEY_W))
             {
-                if (TileY() - 1 >= 0)
+                if (map.GetTile(TileX, TileY - 1).IsWalkable)
                 {
-                    if (world[TileY() - 1, TileX()] != 0)
-                    {
-                        Position.Y -= 16;
-                    }
+                    Position.Y -= 16;
                 }
             }
             else if (Raylib.IsKeyDown(KeyboardKey.KEY_S))
             {
-                if (TileY() + 1 < world.GetLength(0))
+                if (map.GetTile(TileX, TileY + 1).IsWalkable)
                 {
-                    if (world[TileY() + 1, TileX()] != 0)
-                    {
-                        Position.Y += 16;
-                    }
+                    Position.Y += 16;
                 }
             }
             else if (Raylib.IsKeyDown(KeyboardKey.KEY_A))
             {
-                if (TileX() - 1 >= 0)
+                if (map.GetTile(TileX - 1, TileY).IsWalkable)
                 {
-                    if (world[TileY(), TileX() - 1] != 0)
-                    {
-                        Position.X -= 16;
-                    }
+                    Position.X -= 16;
                 }
             }
             else if (Raylib.IsKeyDown(KeyboardKey.KEY_D))
             {
-                if (TileX() + 1 < world.GetLength(1))
+                if (map.GetTile(TileX + 1, TileY).IsWalkable)
                 {
-                    if (world[TileY(), TileX() + 1] != 0)
-                    {
-                        Position.X += 16;
-                    }
+                    Position.X += 16;
                 }
             }
         }
@@ -62,16 +66,6 @@ namespace MonsterWorld.Entities
         public void Draw()
         {
             Raylib.DrawTextureRec(_texture, _frame, Position, Color.WHITE);
-        }
-
-        private int TileX()
-        {
-            return (int)Position.X / 16;
-        }
-
-        private int TileY()
-        {
-            return (int)Position.Y / 16;
         }
     }
 }

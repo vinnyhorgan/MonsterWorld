@@ -15,7 +15,7 @@ namespace MonsterWorld.Entities
     {
         private Texture2D _texture;
         private Rectangle _frame;
-        private System.Drawing.Point[] _path = null;
+        private Vector2[] _path = new Vector2[0];
         private MonsterState _state = MonsterState.Idle;
         private float _timer = 0.0f;
         private float _thirst = 0.0f;
@@ -29,7 +29,23 @@ namespace MonsterWorld.Entities
             _frame = new Rectangle(Raylib.GetRandomValue(0, 7) * 16, 0, 16, 16);
         }
 
-        public void Update(float dt, short[,] _world, PathFinder pathFinder, Player player)
+        public int TileX
+        {
+            get
+            {
+                return (int)Position.X / 16;
+            }
+        }
+
+        public int TileY
+        {
+            get
+            {
+                return (int)Position.Y / 16;
+            }
+        }
+
+        public void Update(float dt, Map map, Player player)
         {
             _timer += dt;
 
@@ -37,15 +53,15 @@ namespace MonsterWorld.Entities
 
             if (_state == MonsterState.Idle)
             {
-                Idle(_world);
+                Idle(map);
             }
             else if (_state == MonsterState.Chase)
             {
-                Chase(pathFinder, player);
+                Chase(map, player);
             }
             else if (_state == MonsterState.Thirsty)
             {
-                Thirsty(_world, pathFinder);
+                Thirsty(map);
             }
         }
 
@@ -72,12 +88,12 @@ namespace MonsterWorld.Entities
             {
                 for (int i = 0; i < _path.Length; i++)
                 {
-                    Raylib.DrawRectangle(_path[i].X * 16, _path[i].Y * 16, 16, 16, Raylib.Fade(Color.RED, 0.5f));
+                    Raylib.DrawRectangle((int)_path[i].X * 16, (int)_path[i].Y * 16, 16, 16, Raylib.Fade(Color.RED, 0.5f));
                 }
             }
         }
 
-        private void Idle(short[,] world)
+        private void Idle(Map map)
         {
             if (_thirst > 30.0f)
             {
@@ -92,48 +108,36 @@ namespace MonsterWorld.Entities
 
                 if (direction == 0)
                 {
-                    if (TileY() - 1 >= 0)
+                    if (map.GetTile(TileX, TileY - 1).IsWalkable)
                     {
-                        if (world[TileY() - 1, TileX()] != 0)
-                        {
-                            Position.Y -= 16;
-                        }
+                        Position.Y -= 16;
                     }
                 }
                 else if (direction == 1)
                 {
-                    if (TileY() + 1 < world.GetLength(0))
+                    if (map.GetTile(TileX, TileY + 1).IsWalkable)
                     {
-                        if (world[TileY() + 1, TileX()] != 0)
-                        {
-                            Position.Y += 16;
-                        }
+                        Position.Y += 16;
                     }
                 }
                 else if (direction == 2)
                 {
-                    if (TileX() - 1 >= 0)
+                    if (map.GetTile(TileX - 1, TileY).IsWalkable)
                     {
-                        if (world[TileY(), TileX() - 1] != 0)
-                        {
-                            Position.X -= 16;
-                        }
+                        Position.X -= 16;
                     }
                 }
                 else if (direction == 3)
                 {
-                    if (TileX() + 1 < world.GetLength(1))
+                    if (map.GetTile(TileX + 1, TileY).IsWalkable)
                     {
-                        if (world[TileY(), TileX() + 1] != 0)
-                        {
-                            Position.X += 16;
-                        }
+                        Position.X += 16;
                     }
                 }
             }
         }
 
-        private void Thirsty(short[,] world, PathFinder _pathFinder)
+        private void Thirsty(Map map)
         {
             // find nearest water tile
             // find path to water tile
@@ -146,7 +150,7 @@ namespace MonsterWorld.Entities
 
             if (_path == null)
             {
-                var waterTile = FindNearestWaterTile(world);
+                var waterTile = FindNearestWaterTile(map);
 
                 if (waterTile.X == -1 && waterTile.Y == -1)
                 {
@@ -155,7 +159,7 @@ namespace MonsterWorld.Entities
                     return;
                 }
 
-                _path = _pathFinder.FindPath(new System.Drawing.Point(TileX(), TileY()), waterTile);
+                _path = map.FindPath(TileX, TileY, waterTile.X, waterTile.Y);
             }
 
             if (_path != null && _path.Length > 0)
@@ -183,7 +187,7 @@ namespace MonsterWorld.Entities
                         Position.Y -= 16;
                     }
 
-                    var newPath = new System.Drawing.Point[_path.Length - 1];
+                    var newPath = new Vector2[_path.Length - 1];
 
                     for (int i = 0; i < newPath.Length; i++)
                     {
@@ -194,7 +198,7 @@ namespace MonsterWorld.Entities
                 }
             }
 
-            if (world[TileY(), TileX()] == (short)Scenes.TileType.Water)
+            if (map.GetTile(TileX, TileY).Type == TileType.Water)
             {
                 _state = MonsterState.Idle;
                 _thirst = 0.0f;
@@ -202,23 +206,23 @@ namespace MonsterWorld.Entities
             }
         }
 
-        private System.Drawing.Point FindNearestWaterTile(short[,] world)
+        private System.Drawing.Point FindNearestWaterTile(Map map)
         {
             var nearestWaterTile = new System.Drawing.Point(-1, -1);
             var nearestDistance = float.MaxValue;
 
-            for (int row = 0; row < world.GetLength(0); row++)
+            for (int x = 0; x < map.Width; x++)
             {
-                for (int col = 0; col < world.GetLength(1); col++)
+                for (int y = 0; y < map.Height; y++)
                 {
-                    if (world[row, col] == (short)Scenes.TileType.Water)
+                    if (map.GetTile(x, y).Type == TileType.Water)
                     {
-                        var distance = Raymath.Vector2Distance(Position, new Vector2(col * 16, row * 16));
+                        var distance = Raymath.Vector2Distance(Position, new Vector2(x * 16, y * 16));
 
                         if (distance < nearestDistance)
                         {
                             nearestDistance = distance;
-                            nearestWaterTile = new System.Drawing.Point(col, row);
+                            nearestWaterTile = new System.Drawing.Point(x, y);
                         }
                     }
                 }
@@ -227,7 +231,7 @@ namespace MonsterWorld.Entities
             return nearestWaterTile;
         }
 
-        private void Chase(PathFinder pathFinder, Player player)
+        private void Chase(Map map, Player player)
         {
             if (Position == player.Position)
             {
@@ -236,7 +240,7 @@ namespace MonsterWorld.Entities
 
             if (Raymath.Vector2Distance(Position, player.Position) < 15 * 16)
             {
-                _path = pathFinder.FindPath(new System.Drawing.Point((int)Position.X / 16, (int)Position.Y / 16), new System.Drawing.Point((int)player.Position.X / 16, (int)player.Position.Y / 16));
+                _path = map.FindPath(TileX, TileY, player.TileX, player.TileY);
             }
 
             if (_path != null && _path.Length > 0)
@@ -269,16 +273,6 @@ namespace MonsterWorld.Entities
                     Position.Y -= 16;
                 }
             }
-        }
-
-        private int TileX()
-        {
-            return (int)Position.X / 16;
-        }
-
-        private int TileY()
-        {
-            return (int)Position.Y / 16;
         }
     }
 }
