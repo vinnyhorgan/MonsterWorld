@@ -18,6 +18,11 @@ namespace MonsterWorld.Entities
         private int _range;
         private float _thirst = 0.0f;
         private float _timer = 0.0f;
+        private int _direction = 0;
+        private int _counter = 0;
+        private int _moveCounter = Raylib.GetRandomValue(3, 8);
+        private int _thirstResistance = Raylib.GetRandomValue(10, 40);
+        private float _speed = Raylib.GetRandomValue(20, 300) / 100.0f;
 
         public Position Position = new(0, 0);
 
@@ -38,7 +43,7 @@ namespace MonsterWorld.Entities
             }
         }
 
-        public void Update(float dt, Map map, Player player)
+        public void Update(float dt, Map map)
         {
             _timer += dt;
 
@@ -85,34 +90,57 @@ namespace MonsterWorld.Entities
 
         private void Move(Map map)
         {
-            var direction = Raylib.GetRandomValue(0, 3);
+            _counter++;
 
-            if (direction == 0)
+            if (_counter == _moveCounter)
+            {
+                _direction = Raylib.GetRandomValue(0, 3);
+                _moveCounter = Raylib.GetRandomValue(3, 8);
+                _counter = 0;
+            }
+
+            if (_direction == 0)
             {
                 if (map.GetTile(Position.X, Position.Y - 1).IsWalkable)
                 {
                     Position.Y--;
                 }
+                else
+                {
+                    _direction = Raylib.GetRandomValue(0, 3);
+                }
             }
-            else if (direction == 1)
+            else if (_direction == 1)
             {
                 if (map.GetTile(Position.X, Position.Y + 1).IsWalkable)
                 {
                     Position.Y++;
                 }
+                else
+                {
+                    _direction = Raylib.GetRandomValue(0, 3);
+                }
             }
-            else if (direction == 2)
+            else if (_direction == 2)
             {
                 if (map.GetTile(Position.X - 1, Position.Y).IsWalkable)
                 {
                     Position.X--;
                 }
+                else
+                {
+                    _direction = Raylib.GetRandomValue(0, 3);
+                }
             }
-            else if (direction == 3)
+            else if (_direction == 3)
             {
                 if (map.GetTile(Position.X + 1, Position.Y).IsWalkable)
                 {
                     Position.X++;
+                }
+                else
+                {
+                    _direction = Raylib.GetRandomValue(0, 3);
                 }
             }
         }
@@ -121,12 +149,12 @@ namespace MonsterWorld.Entities
         {
             _thirst += Raylib.GetFrameTime();
 
-            if (_thirst > 5.0f)
+            if (_thirst > _thirstResistance)
             {
                 _state = MonsterState.Thirsty;
             }
 
-            if (_timer > 1.0f)
+            if (_timer > _speed)
             {
                 _timer = 0.0f;
 
@@ -136,7 +164,7 @@ namespace MonsterWorld.Entities
 
         private void Thirsty(Map map)
         {
-            if (_timer > 0.5f)
+            if (_timer > _speed * 0.5f)
             {
                 _timer = 0.0f;
 
@@ -151,12 +179,28 @@ namespace MonsterWorld.Entities
                     else
                     {
                         _path = map.FindPath(Position.X, Position.Y, waterPos.X, waterPos.Y);
-
-                        foreach (var pos in _path)
-                        {
-                            Logger.Info("Pos found: " + pos.ToString());
-                        }
                     }
+                }
+
+                if (_path.Length > 0)
+                {
+                    Position = _path[0];
+
+                    var newPath = new Position[_path.Length - 1];
+
+                    for (int i = 0; i < newPath.Length; i++)
+                    {
+                        newPath[i] = _path[i + 1];
+                    }
+
+                    _path = newPath;
+                }
+
+                if (map.GetTile(Position.X, Position.Y).Type == TileType.Water)
+                {
+                    _state = MonsterState.Idle;
+                    _thirst = 0.0f;
+                    _path = new Position[0];
                 }
             }
         }

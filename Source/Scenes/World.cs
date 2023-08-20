@@ -52,7 +52,7 @@ namespace MonsterWorld.Scenes
 
             foreach (var monster in _monsters)
             {
-                monster.Update(dt, _map, _player);
+                monster.Update(dt, _map);
             }
         }
 

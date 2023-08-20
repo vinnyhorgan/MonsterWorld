@@ -30,7 +30,7 @@ namespace MonsterWorld
                     Frame = new Rectangle(16 * 6, 16, 16, 16);
                     break;
                 case TileType.Water:
-                    IsWalkable = false;
+                    IsWalkable = true;
                     Texture = AssetManager.Instance.GetTexture("tiles.png");
                     Frame = new Rectangle(16 * 6, 16 * 2, 16, 16);
                     break;
