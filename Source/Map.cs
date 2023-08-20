@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Numerics;
 using AStar;
 using AStar.Options;
@@ -5,6 +6,58 @@ using Raylib_cs;
 
 namespace MonsterWorld
 {
+    struct Position
+    {
+        public int X { get; set; }
+        public int Y { get; set; }
+
+        public Position(int x, int y)
+        {
+            X = x;
+            Y = y;
+        }
+
+        public static bool operator ==(Position a, Position b)
+        {
+            return a.X == b.X && a.Y == b.Y;
+        }
+
+        public static bool operator !=(Position a, Position b)
+        {
+            return !(a == b);
+        }
+
+        public static Position operator +(Position a, Position b)
+        {
+            return new Position(a.X + b.X, a.Y + b.Y);
+        }
+
+        public static Position operator -(Position a, Position b)
+        {
+            return new Position(a.X - b.X, a.Y - b.Y);
+        }
+
+        public static Position operator *(Position a, int b)
+        {
+            return new Position(a.X * b, a.Y * b);
+        }
+
+        public static Position operator /(Position a, int b)
+        {
+            return new Position(a.X / b, a.Y / b);
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is Position position && this == position;
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+    }
+
     class Map
     {
         private Tile[,] _tiles;
@@ -96,15 +149,52 @@ namespace MonsterWorld
             return _tiles[y, x];
         }
 
-        public Vector2[] FindPath(int x1, int y1, int x2, int y2)
+        public Position[] GetPositionsInRange(int x, int y, int range)
         {
-            var positionPath = _finder.FindPath(new Position(y1, x1), new Position(y2, x2));
+            var positions = new List<Position>();
 
-            var path = new Vector2[positionPath.Length];
+            for (int row = y - range; row <= y + range; row++)
+            {
+                for (int col = x - range; col <= x + range; col++)
+                {
+                    if (col >= 0 && col < Width && row >= 0 && row < Height)
+                    {
+                        positions.Add(new Position(col, row));
+                    }
+                }
+            }
+
+            return positions.ToArray();
+        }
+
+        public Position GetPositionOfTileInRange(int x, int y, int range, TileType tile)
+        {
+            var positions = GetPositionsInRange(x, y, range);
+
+            foreach (var position in positions)
+            {
+                if (GetTile(position.X, position.Y).Type == tile)
+                {
+                    return position;
+                }
+            }
+
+            return new Position(-1, -1);
+        }
+
+        public Position[] FindPath(int x1, int y1, int x2, int y2)
+        {
+            Logger.Info($"Searching from {x1},{y1} to {x2},{y2}");
+
+            var positionPath = _finder.FindPath(new System.Drawing.Point(x1, y1), new System.Drawing.Point(x2, y2));
+
+            Logger.Info("Path found of length: " + positionPath.Length);
+
+            var path = new Position[positionPath.Length];
 
             for (int i = 0; i < positionPath.Length; i++)
             {
-                path[i] = new Vector2(positionPath[i].Column, positionPath[i].Row);
+                path[i] = new Position(positionPath[i].X, positionPath[i].Y);
             }
 
             return path;

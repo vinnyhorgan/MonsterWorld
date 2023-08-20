@@ -1,7 +1,7 @@
+using System.Collections.Generic;
+using System.Numerics;
 using Raylib_cs;
 using MonsterWorld.Entities;
-using System.Numerics;
-using System.Collections.Generic;
 
 namespace MonsterWorld.Scenes
 {
@@ -16,7 +16,7 @@ namespace MonsterWorld.Scenes
         {
             _map = new Map();
 
-            for (int i = 0; i < 20; i++)
+            for (int i = 0; i < 10; i++)
             {
                 var monster = new Monster();
 
@@ -27,7 +27,7 @@ namespace MonsterWorld.Scenes
 
                     if (_map.GetTile(x, y).IsWalkable)
                     {
-                        monster.Position = new Vector2(x * 16, y * 16);
+                        monster.Position = new Position(x, y);
                         break;
                     }
                 }
@@ -37,7 +37,7 @@ namespace MonsterWorld.Scenes
 
             _camera = new Camera2D
             {
-                target = _player.Position,
+                target = _player.PixelPosition,
                 offset = new Vector2(GameWidth / 2, GameHeight / 2),
                 rotation = 0.0f,
                 zoom = 1.0f
@@ -48,7 +48,7 @@ namespace MonsterWorld.Scenes
         {
             _player.Update(dt, _map);
 
-            _camera.target = _player.Position;
+            _camera.target = _player.PixelPosition;
 
             foreach (var monster in _monsters)
             {
@@ -64,7 +64,7 @@ namespace MonsterWorld.Scenes
 
             foreach (var monster in _monsters)
             {
-                monster.Draw();
+                monster.Draw(_map);
             }
 
             _player.Draw();

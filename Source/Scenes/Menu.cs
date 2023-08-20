@@ -25,14 +25,14 @@ namespace MonsterWorld.Scenes
             _monster = new MonsterSprite
             {
                 Frame = new Rectangle(0, 16, 32, 32),
-                Position = new Vector2(400, 80)
+                Position = new Vector2(GameWidth + 100, 120)
             };
 
-            _tweenIn.TweenTo(_monster, _monster => _monster.Position, new Vector2(160 - 16, 80), 1, 0).RepeatForever(5);
-            _tweenOut.TweenTo(_monster, _monster => _monster.Position, new Vector2(-100, 80), 1, 4)
+            _tweenIn.TweenTo(_monster, _monster => _monster.Position, new Vector2(GameWidth / 2 - 16, 120), 1, 0).RepeatForever(5);
+            _tweenOut.TweenTo(_monster, _monster => _monster.Position, new Vector2(-100, 120), 1, 4)
                 .RepeatForever(5)
                 .OnEnd((tween) => {
-                    _monster.Position = new Vector2(400, 80);
+                    _monster.Position = new Vector2(GameWidth + 100, 120);
                     _monster.Frame.x += 32;
 
                     if (_monster.Frame.x == 32 * 4)
@@ -67,7 +67,7 @@ namespace MonsterWorld.Scenes
 
             Raylib.DrawEllipse(GameWidth / 2, GameHeight / 2 + 20, 50, 25, Color.LIME);
 
-            Raylib.DrawText("Press SPACE to start", GameWidth / 2 - Raylib.MeasureText("Press SPACE to start", 5) / 2, GameHeight / 2 + 60, 5, Color.BLACK);
+            Raylib.DrawText("Press SPACE to start", GameWidth / 2 - Raylib.MeasureText("Press SPACE to start", 5) / 2, GameHeight / 2 + 80, 5, Color.BLACK);
 
             Raylib.DrawTextureRec(_characters, _monster.Frame, _monster.Position, Color.WHITE);
         }
