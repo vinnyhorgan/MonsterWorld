@@ -7,6 +7,14 @@ using System.Collections.Generic;
 
 namespace MonsterWorld.Scenes
 {
+    enum TileType
+    {
+        Rock = 0,
+        Grass,
+        Water,
+        Plant
+    }
+
     class World : Scene
     {
         private Texture2D _tiles;
@@ -15,6 +23,8 @@ namespace MonsterWorld.Scenes
         private Player _player = new();
         private Rectangle _rock = new(0, 16, 16, 16);
         private Rectangle _grass = new(16 * 6, 16, 16, 16);
+        private Rectangle _water = new(16 * 6, 32, 16, 16);
+        private Rectangle _plant = new(0, 0, 16, 16);
         private List<Monster> _monsters = new();
         private Camera2D _camera;
 
@@ -28,15 +38,23 @@ namespace MonsterWorld.Scenes
             {
                 for (int col = 0; col < _world.GetLength(1); col++)
                 {
-                    int randomNumber = Raylib.GetRandomValue(0, 100);
+                    int randomNumber = Raylib.GetRandomValue(0, 200);
 
-                    if (randomNumber < 10)
+                    if (randomNumber < 1)
                     {
-                        _world[row, col] = 0;
+                        _world[row, col] = (short)TileType.Water;
+                    }
+                    else if (randomNumber < 10)
+                    {
+                        _world[row, col] = (short)TileType.Rock;
+                    }
+                    else if (randomNumber < 50)
+                    {
+                        _world[row, col] = (short)TileType.Plant;
                     }
                     else
                     {
-                        _world[row, col] = 1;
+                        _world[row, col] = (short)TileType.Grass;
                     }
                 }
             }
@@ -97,16 +115,23 @@ namespace MonsterWorld.Scenes
         {
             Raylib.BeginMode2D(_camera);
 
-            // draw map loop y first
             for (int row = 0; row < _world.GetLength(0); row++)
             {
                 for (int col = 0; col < _world.GetLength(1); col++)
                 {
                     Raylib.DrawTextureRec(_tiles, _grass, new Vector2(col * 16, row * 16), Color.WHITE);
 
-                    if (_world[row, col] == 0)
+                    if (_world[row, col] == (short)TileType.Rock)
                     {
                         Raylib.DrawTextureRec(_tiles, _rock, new Vector2(col * 16, row * 16), Color.WHITE);
+                    }
+                    else if (_world[row, col] == (short)TileType.Water)
+                    {
+                        Raylib.DrawTextureRec(_tiles, _water, new Vector2(col * 16, row * 16), Color.WHITE);
+                    }
+                    else if (_world[row, col] == (short)TileType.Plant)
+                    {
+                        Raylib.DrawTextureRec(_tiles, _plant, new Vector2(col * 16, row * 16), Color.WHITE);
                     }
                 }
             }

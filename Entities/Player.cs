@@ -21,7 +21,7 @@ namespace MonsterWorld.Entities
             {
                 if (TileY() - 1 >= 0)
                 {
-                    if (world[TileY() - 1, TileX()] == 1)
+                    if (world[TileY() - 1, TileX()] != 0)
                     {
                         Position.Y -= 16;
                     }
@@ -31,7 +31,7 @@ namespace MonsterWorld.Entities
             {
                 if (TileY() + 1 < world.GetLength(0))
                 {
-                    if (world[TileY() + 1, TileX()] == 1)
+                    if (world[TileY() + 1, TileX()] != 0)
                     {
                         Position.Y += 16;
                     }
@@ -41,7 +41,7 @@ namespace MonsterWorld.Entities
             {
                 if (TileX() - 1 >= 0)
                 {
-                    if (world[TileY(), TileX() - 1] == 1)
+                    if (world[TileY(), TileX() - 1] != 0)
                     {
                         Position.X -= 16;
                     }
@@ -51,7 +51,7 @@ namespace MonsterWorld.Entities
             {
                 if (TileX() + 1 < world.GetLength(1))
                 {
-                    if (world[TileY(), TileX() + 1] == 1)
+                    if (world[TileY(), TileX() + 1] != 0)
                     {
                         Position.X += 16;
                     }

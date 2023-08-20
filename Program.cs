@@ -6,8 +6,8 @@ namespace MonsterWorld
 {
     class Program
     {
-        public static int GameWidth { get; private set; } = 320;
-        public static int GameHeight { get; private set; } = 180;
+        public static int GameWidth { get; private set; } = 480;
+        public static int GameHeight { get; private set; } = 270;
         public static Vector2 Mouse { get; private set; }
 
         static void Main(string[] args)
@@ -15,7 +15,7 @@ namespace MonsterWorld
             Logger.Init(true);
 
             Raylib.SetConfigFlags(ConfigFlags.FLAG_WINDOW_RESIZABLE);
-            Raylib.InitWindow(GameWidth * 4, GameHeight * 4, "Monster World");
+            Raylib.InitWindow(GameWidth * 3, GameHeight * 3, "Monster World");
             Raylib.SetWindowMinSize(GameWidth, GameHeight);
             Raylib.SetExitKey(KeyboardKey.KEY_NULL);
             Raylib.SetTargetFPS(Raylib.GetMonitorRefreshRate(Raylib.GetCurrentMonitor()));
