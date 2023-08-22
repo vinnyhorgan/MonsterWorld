@@ -31,6 +31,22 @@ namespace MonsterWorld
             }
         }
 
+        public string GetData(string name)
+        {
+            using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream($"MonsterWorld.Assets.Data.{name}"))
+            {
+                if (stream == null)
+                {
+                    throw new FileNotFoundException($"Could not find data {name}");
+                }
+
+                using (var sr = new StreamReader(stream))
+                {
+                    return sr.ReadToEnd();
+                }
+            }
+        }
+
         public Texture2D GetTexture(string name)
         {
             if (_textures.ContainsKey(name))

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Numerics;
 using Raylib_cs;
 using MonsterWorld.Entities;
+using Newtonsoft.Json;
 
 namespace MonsterWorld.Scenes
 {
@@ -42,6 +43,14 @@ namespace MonsterWorld.Scenes
                 rotation = 0.0f,
                 zoom = 1.0f
             };
+
+            var monsters = AssetManager.Instance.GetData("monsters.json");
+            List<Monster> monsterList = JsonConvert.DeserializeObject<List<Monster>>(monsters);
+
+            foreach (var monster in monsterList)
+            {
+                Logger.Info($"Monster: {monster.Name}");
+            }
         }
 
         public override void Update(float dt)

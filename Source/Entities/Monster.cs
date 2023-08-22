@@ -1,4 +1,5 @@
 using System.Numerics;
+using System.Reflection.Metadata.Ecma335;
 using Raylib_cs;
 
 namespace MonsterWorld.Entities
@@ -12,6 +13,8 @@ namespace MonsterWorld.Entities
 
     class Monster
     {
+        public string Name { get; set; }
+
         private Texture2D _texture;
         private Rectangle _frame;
         private Position[] _path = new Position[0];

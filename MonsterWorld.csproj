@@ -15,6 +15,7 @@
   <ItemGroup>
     <PackageReference Include="AStarLite" Version="1.1.0" />
     <PackageReference Include="MonoGame.Extended.Tweening" Version="3.8.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="Raylib-cs" Version="4.5.0.4" />
   </ItemGroup>
 
