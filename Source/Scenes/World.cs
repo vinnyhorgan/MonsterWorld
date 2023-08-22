@@ -50,6 +50,11 @@ namespace MonsterWorld.Scenes
             foreach (var monster in monsterList)
             {
                 Logger.Info($"Monster: {monster.Name}");
+                Logger.Info($"Description: {monster.Description}");
+                Logger.Info($"SpriteImage: {monster.SpriteImage}");
+                Logger.Info($"SpriteFrame: {monster.SpriteFrame}");
+                Logger.Info($"FullImage: {monster.FullImage}");
+                Logger.Info($"FullFrame: {monster.FullFrame}");
             }
         }
 
