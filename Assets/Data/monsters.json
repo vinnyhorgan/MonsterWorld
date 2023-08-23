@@ -58,7 +58,7 @@
         "description": "Luminantis is a striking mantis-inspired monster adorned in pristine white exoskeleton, with a radiant yellow orb nestled within its thorax. This otherworldly creature is a symbol of balance and precision in the natural world. It's often seen as a guardian of the moonlit meadows where it resides, using its keen agility and the mesmerizing glow of its orb to navigate the night. Luminantis is known for its graceful, almost dance-like movements, which have inspired many artists and poets to seek inspiration from its ethereal beauty.",
         "spriteImage": "characters.png",
         "spriteFrame": {
-            "x": 48,
+            "x": 64,
             "y": 0,
             "width": 16,
             "height": 16

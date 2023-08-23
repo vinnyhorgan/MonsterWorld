@@ -12,14 +12,18 @@ namespace MonsterWorld.Scenes
         private Player _player = new();
         private List<Monster> _monsters = new();
         private Camera2D _camera;
+        private Monster _selectedMonster;
 
         public override void Load()
         {
             _map = new Map();
 
+            var monsterDataFile = AssetManager.Instance.GetData("monsters.json");
+            List<MonsterData> monsterData = JsonConvert.DeserializeObject<List<MonsterData>>(monsterDataFile);
+
             for (int i = 0; i < 10; i++)
             {
-                var monster = new Monster();
+                var monster = new Monster(monsterData[Raylib.GetRandomValue(0, monsterData.Count - 1)]);
 
                 while (true)
                 {
@@ -29,6 +33,7 @@ namespace MonsterWorld.Scenes
                     if (_map.GetTile(x, y).IsWalkable)
                     {
                         monster.Position = new Position(x, y);
+
                         break;
                     }
                 }
@@ -43,19 +48,6 @@ namespace MonsterWorld.Scenes
                 rotation = 0.0f,
                 zoom = 1.0f
             };
-
-            var monsters = AssetManager.Instance.GetData("monsters.json");
-            List<Monster> monsterList = JsonConvert.DeserializeObject<List<Monster>>(monsters);
-
-            foreach (var monster in monsterList)
-            {
-                Logger.Info($"Monster: {monster.Name}");
-                Logger.Info($"Description: {monster.Description}");
-                Logger.Info($"SpriteImage: {monster.SpriteImage}");
-                Logger.Info($"SpriteFrame: {monster.SpriteFrame}");
-                Logger.Info($"FullImage: {monster.FullImage}");
-                Logger.Info($"FullFrame: {monster.FullFrame}");
-            }
         }
 
         public override void Update(float dt)
@@ -83,7 +75,28 @@ namespace MonsterWorld.Scenes
 
             _player.Draw();
 
+            foreach (var monster in _monsters)
+            {
+                if (Raylib.CheckCollisionPointRec(Raylib.GetScreenToWorld2D(Mouse, _camera), new Rectangle(monster.PixelPosition.X, monster.PixelPosition.Y, 16, 16)))
+                {
+                    Raylib.DrawRectangle((int)monster.PixelPosition.X, (int)monster.PixelPosition.Y, 16, 16, Raylib.Fade(Color.RED, 0.5f));
+
+                    if (Raylib.IsMouseButtonPressed(MouseButton.MOUSE_LEFT_BUTTON))
+                    {
+                        _selectedMonster = monster;
+                    }
+                }
+            }
+
             Raylib.EndMode2D();
+
+            if (_selectedMonster != null)
+            {
+                Raylib.DrawRectangle(GameWidth - 200, 0, 200, GameHeight, Raylib.Fade(Color.BLACK, 0.5f));
+
+                Raylib.DrawText($"Name: {_selectedMonster._data.Name}", GameWidth - 190, 10, 10, Color.WHITE);
+                Raylib.DrawTextureRec(AssetManager.Instance.GetTexture(_selectedMonster._data.FullImage), _selectedMonster._data.FullFrame, new Vector2(GameWidth - 190, 30), Color.WHITE);
+            }
 
             Raylib.DrawText("WASD to move", 10, 10, 10, Color.WHITE);
         }

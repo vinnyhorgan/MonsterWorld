@@ -56,7 +56,7 @@ namespace MonsterWorld
 
                 Raylib.BeginTextureMode(target);
 
-                Raylib.ClearBackground(Color.BLACK);
+                Raylib.ClearBackground(Color.SKYBLUE);
 
                 SceneManager.Instance.Draw();
 

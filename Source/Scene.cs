@@ -17,7 +17,7 @@ namespace MonsterWorld
 
         public Vector2 Mouse
         {
-            get { return Raylib.GetMousePosition(); }
+            get { return Program.Mouse; }
         }
 
         public virtual void Load() {}

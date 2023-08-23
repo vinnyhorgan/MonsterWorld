@@ -1,5 +1,6 @@
 using System.Numerics;
 using System.Reflection.Metadata.Ecma335;
+using MonoGame.Extended.Sprites;
 using Raylib_cs;
 
 namespace MonsterWorld.Entities
@@ -13,18 +14,12 @@ namespace MonsterWorld.Entities
 
     class Monster
     {
-        public string Name { get; set; }
-        public string Description { get; set; }
-        public string SpriteImage { get; set; }
-        public Rectangle SpriteFrame { get; set; }
-        public string FullImage { get; set; }
-        public Rectangle FullFrame { get; set; }
+        public MonsterData _data;
 
         private Texture2D _texture;
-        private Rectangle _frame;
         private Position[] _path = new Position[0];
         private MonsterState _state = MonsterState.Idle;
-        private int _range;
+        private int _range = Raylib.GetRandomValue(1, 3);
         private float _thirst = 0.0f;
         private float _hunger = 0.0f;
         private float _timer = 0.0f;
@@ -37,13 +32,11 @@ namespace MonsterWorld.Entities
 
         public Position Position = new(0, 0);
 
-        public Monster()
+        public Monster(MonsterData data)
         {
-            _texture = AssetManager.Instance.GetTexture("characters.png");
+            _data = data;
 
-            _frame = new Rectangle(Raylib.GetRandomValue(0, 7) * 16, 0, 16, 16);
-
-            _range = Raylib.GetRandomValue(1, 3);
+            _texture = AssetManager.Instance.GetTexture(_data.SpriteImage);
         }
 
         public Vector2 PixelPosition
@@ -89,7 +82,7 @@ namespace MonsterWorld.Entities
                 tint = Color.ORANGE;
             }
 
-            Raylib.DrawTextureRec(_texture, _frame, PixelPosition, tint);
+            Raylib.DrawTextureRec(_texture, _data.SpriteFrame, PixelPosition, tint);
 
             if (_path.Length > 0)
             {
