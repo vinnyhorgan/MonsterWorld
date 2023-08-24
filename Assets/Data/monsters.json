@@ -76,7 +76,7 @@
         "description": "Vegitoclops is a whimsical, vegetable-inspired creature that features a vibrant green, leafy exterior and a single, large eye that sits at the center of its bulbous body. Resembling a walking salad, Vegitoclops thrives in lush gardens and dense jungles where it blends seamlessly with its plant surroundings. It's often mistaken for a mobile shrub until its keen eye suddenly focuses on its surroundings. This creature's unique appearance and harmonious connection to nature make it a symbol of the bountiful and mysterious world of vegetation.",
         "spriteImage": "characters.png",
         "spriteFrame": {
-            "x": 64,
+            "x": 48,
             "y": 0,
             "width": 16,
             "height": 16

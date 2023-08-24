@@ -60,6 +60,11 @@ namespace MonsterWorld.Scenes
             {
                 monster.Update(dt, _map);
             }
+
+            if (Raylib.IsMouseButtonPressed(MouseButton.MOUSE_BUTTON_LEFT))
+            {
+                _selectedMonster = null;
+            }
         }
 
         public override void Draw()
@@ -71,12 +76,14 @@ namespace MonsterWorld.Scenes
             foreach (var monster in _monsters)
             {
                 monster.Draw(_map);
-            }
 
-            _player.Draw();
+                if (monster == _selectedMonster)
+                {
+                    Raylib.DrawRectangle((int)monster.PixelPosition.X, (int)monster.PixelPosition.Y, 16, 16, Raylib.Fade(Color.RED, 0.5f));
 
-            foreach (var monster in _monsters)
-            {
+                    continue;
+                }
+
                 if (Raylib.CheckCollisionPointRec(Raylib.GetScreenToWorld2D(Mouse, _camera), new Rectangle(monster.PixelPosition.X, monster.PixelPosition.Y, 16, 16)))
                 {
                     Raylib.DrawRectangle((int)monster.PixelPosition.X, (int)monster.PixelPosition.Y, 16, 16, Raylib.Fade(Color.RED, 0.5f));
@@ -87,6 +94,8 @@ namespace MonsterWorld.Scenes
                     }
                 }
             }
+
+            _player.Draw();
 
             Raylib.EndMode2D();
 
